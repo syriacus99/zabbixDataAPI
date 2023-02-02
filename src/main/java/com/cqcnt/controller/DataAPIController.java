@@ -5,11 +5,13 @@ import com.cqcnt.exception.GetResultException;
 import com.cqcnt.exception.ZabbixConfigException;
 import com.cqcnt.service.APIDataService;
 import com.cqcnt.util.Result;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @RestController
 @RequestMapping
@@ -23,8 +25,8 @@ public class DataAPIController {
         return result;
     }
 
-    @RequestMapping("/getGraph")
-    private byte[] getGraph(HttpServletRequest request, Integer graphId) throws AuthenticationException, ZabbixConfigException {
+    @RequestMapping(value="/getGraph",produces = MediaType.IMAGE_JPEG_VALUE)
+    private byte[] getGraph(HttpServletRequest request, Integer graphId) throws AuthenticationException, ZabbixConfigException, IOException {
         return apiDataService.getGraph(request,graphId);
     }
 }

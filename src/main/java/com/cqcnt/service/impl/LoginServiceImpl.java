@@ -1,6 +1,7 @@
 package com.cqcnt.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cqcnt.config.GlobalVariable;
 import com.cqcnt.exception.AuthenticationException;
 import com.cqcnt.exception.GetTokenMethodError;
 import com.cqcnt.exception.ZabbixConfigException;
@@ -43,8 +44,11 @@ public class LoginServiceImpl implements LoginService {
     @Resource
     private RestTemplate restTemplate;
 
+    @Resource
+    private GlobalVariable globalVariable;
+
     @Override
-    public void getToken(HttpServletRequest request) throws IntrospectionException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, ZabbixConfigException, AuthenticationException {
+    public void getToken() throws IntrospectionException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, ZabbixConfigException, AuthenticationException {
 
         // 用户名密码地址未设置
         if(zabbixUserName==null|zabbixPassword==null|zabbixAddress==null){
@@ -60,47 +64,43 @@ public class LoginServiceImpl implements LoginService {
                 "    \"id\": 1,\n" +
                 "    \"auth\": null\n" +
                 "}";
-        //Object requestBody = JSONObject.parse(data);
-        //System.out.println(requestBody);
-        String body = MyHttpUtil.sendJsonPostRequest(zabbixAddress,data,String.class);
+        String body = MyHttpUtil.sendJsonPostRequest(zabbixAddress+"/api_jsonrpc.php",data,String.class);
         JSONObject responseBody = (JSONObject) JSONObject.parse(body);
-        //Class clazz = responseBody.getClass();
+
         String token = null;
         token = (String) responseBody.get("result");
         if(token==null){
             throw new AuthenticationException("用户名密码错误");
         }
         //将token写入session
-        HttpSession session = request.getSession();
-        session.setAttribute("token",token);
+//        HttpSession session = request.getSession();
+//        session.setAttribute("token",token);
+        //将token写入GlobalVariable
+        globalVariable.setToken(token);
         System.out.println(token);
     }
 
     @Override
-    public void getZbxSession(HttpServletRequest request) throws ZabbixConfigException, AuthenticationException {
+    public void getZbxSession() throws ZabbixConfigException, AuthenticationException {
         // 用户名密码地址未设置
         if(zabbixUserName==null|zabbixPassword==null|zabbixAddress==null){
             throw new ZabbixConfigException("Zabbix配置错误");
         }
         MultiValueMap<String,String> map = new LinkedMultiValueMap<>();
-        map.add("username",zabbixUserName);
+        map.add("name",zabbixUserName);
         map.add("password",zabbixPassword);
+        map.add("autologin","1");
         map.add("enter","Sign in");
-        Map<String, Object> response = MyHttpUtil.sendFormPostRequest("http://117.59.224.111/index.php",
+        Map<String, Object> response = MyHttpUtil.sendFormPostRequest(zabbixAddress+"/index.php",
                 map);
         HttpHeaders header = (HttpHeaders) response.get("header");
-        System.out.println(header);
-        Object cookie = header.get("Set-Cookie");
+        List<String> cookie = header.get("Set-Cookie");
         if(cookie==null){
             throw new AuthenticationException("用户名密码错误（获取zbxSession失败）");
         }
-        HttpSession session = request.getSession();
-        String cookieStr = cookie.toString();
-        cookieStr = cookieStr.substring(1, cookieStr.length()-14);
-        System.out.println(cookie);
-        System.out.println(cookieStr);
-        //System.out.println(decode);
-        session.setAttribute("zbxSession",cookieStr);
+        globalVariable.setZabbixSession(cookie);
+//        HttpSession session = request.getSession();
+//        session.setAttribute("zbxSession",cookie);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class LoginServiceImpl implements LoginService {
         session.setAttribute("hostInfo",null);
         Object token = session.getAttribute("token");
         if (token == null ) {
-            getToken(request);
+            getToken();
         }
         token = session.getAttribute("token");
 
@@ -126,7 +126,7 @@ public class LoginServiceImpl implements LoginService {
                 "    \"id\": 1,\n" +
                 "    \"auth\": \""+token.toString()+ "\"\n" +
                 "}";
-        String body = MyHttpUtil.sendJsonPostRequest(zabbixAddress,data,String.class);
+        String body = MyHttpUtil.sendJsonPostRequest(zabbixAddress+"/api_jsonrpc.php",data,String.class);
         JSONObject responseBody = (JSONObject) JSONObject.parse(body);
         List<JSONObject> result = null;
         JSONObject result2 = null;

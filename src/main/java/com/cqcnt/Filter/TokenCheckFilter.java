@@ -22,36 +22,36 @@ public class TokenCheckFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpSession session =  ((HttpServletRequest) servletRequest).getSession();
-        Object token = session.getAttribute("token");
-        if (token==null){
-            try {
-                loginService.getToken((HttpServletRequest) servletRequest);
-            } catch (IntrospectionException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException(e);
-            } catch (ZabbixConfigException e) {
-                throw new RuntimeException(e);
-            } catch (AuthenticationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        Object zabbix = session.getAttribute("zbxSession");
-        if(zabbix==null){
-            try {
-                loginService.getZbxSession((HttpServletRequest) servletRequest);
-            } catch (ZabbixConfigException e) {
-                throw new RuntimeException(e);
-            } catch (AuthenticationException e) {
-                throw new RuntimeException(e);
-            }
-        }
+//        HttpSession session =  ((HttpServletRequest) servletRequest).getSession();
+//        Object token = session.getAttribute("token");
+//        if (token==null){
+//            try {
+//                loginService.getToken((HttpServletRequest) servletRequest);
+//            } catch (IntrospectionException e) {
+//                throw new RuntimeException(e);
+//            } catch (InvocationTargetException e) {
+//                throw new RuntimeException(e);
+//            } catch (IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            } catch (NoSuchFieldException e) {
+//                throw new RuntimeException(e);
+//            } catch (ZabbixConfigException e) {
+//                throw new RuntimeException(e);
+//            } catch (AuthenticationException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//
+//        Object zabbix = session.getAttribute("zbxSession");
+//        if(zabbix==null){
+//            try {
+//                loginService.getZbxSession((HttpServletRequest) servletRequest);
+//            } catch (ZabbixConfigException e) {
+//                throw new RuntimeException(e);
+//            } catch (AuthenticationException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
         filterChain.doFilter(servletRequest,servletResponse);
     }
 

@@ -12,9 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 
 @Resource
 public interface LoginService {
-    public void getToken(HttpServletRequest request) throws IntrospectionException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, ZabbixConfigException, AuthenticationException;
+    //获取登录token
+    public void getToken() throws IntrospectionException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, ZabbixConfigException, AuthenticationException;
 
     public void getAllHost(HttpServletRequest request) throws IntrospectionException, NoSuchFieldException, InvocationTargetException, IllegalAccessException, GetTokenMethodError, ZabbixConfigException, AuthenticationException;
-
-    public void getZbxSession(HttpServletRequest request) throws ZabbixConfigException, AuthenticationException;
+    //获取用来模拟登录的cookie
+    public void getZbxSession() throws ZabbixConfigException, AuthenticationException;
 }

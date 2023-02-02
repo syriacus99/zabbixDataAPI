@@ -31,11 +31,10 @@ public class MyHttpUtil {
         HttpHeaders headers = new HttpHeaders();
         //设置返回媒体数据类型
         headers.add("Accept", "*/*");
-        headers.add("Content-Type","multipart/form-data");
+        headers.add("Content-Type","application/x-www-form-urlencoded");
         headers.add("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
         headers.add("Connection","keep-alive");
-        headers.add("Accept-Encoding","keep-alive");
-        // post请求的请求体
+        //post请求的请求体
         HttpEntity<MultiValueMap> formEntity = new HttpEntity<>(formData, headers);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url,formEntity, String.class);
         HttpHeaders responseHeader = responseEntity.getHeaders();
@@ -53,15 +52,26 @@ public class MyHttpUtil {
         return img;
     }
 
-    static public byte[] getPicture(String url,Object cookie){
+    static public byte[] getPicture(String url,List<String> cookie){
         RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder();
         RestTemplate restTemplate = restTemplateBuilder.build();
         HttpHeaders headers = new HttpHeaders();
+        //List<String> cookies = new ArrayList<>();
+        //cookies.add("zbx_session=eyJzZXNzaW9uaWQiOiI5M2YwYWRjYjdjYmUyMWVhNGZiMWQ4ZTkxMDAxZjUyMCIsInNpZ24iOiJjMDEwMzU4NWJhMTE3ZWRmZGIzNzFmODczYWVhMzRkMzcxOWNhNmIyN2I0MmU2ZGZkZWM0Y2QyMWQyMGE1NTEwIn0%3D");
         //设置返回媒体数据类型
-        headers.add("Cookie",cookie.toString());
+        headers.put("Cookie",cookie);
+        headers.add("Accept", "*/*");
+        headers.add("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
+        headers.add("Connection","keep-alive");
+        headers.add("Host","117.59.224.111");
+        headers.add("Upgrade-Insecure-Requests","1");
+        headers.add("Access-Control-Allow-Origin","*");
         HttpEntity requestEntity = new HttpEntity(headers);
-        ResponseEntity<byte[]> img = restTemplate.getForEntity(url,byte[].class,requestEntity);
-        //byte[] img = restTemplate.getForObject(url, byte[].class);
-        return img.getBody();
+        System.out.println(cookie);
+        System.out.println(requestEntity);
+        //ResponseEntity<byte[]> img = restTemplate.getForEntity(url,byte[].class,requestEntity);
+        ResponseEntity<byte[]> res = restTemplate.exchange(url,HttpMethod.GET,requestEntity,byte[].class);
+        //System.out.println(img);
+        return res.getBody();
     }
 }

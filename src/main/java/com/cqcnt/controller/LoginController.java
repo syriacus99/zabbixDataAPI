@@ -1,6 +1,7 @@
 package com.cqcnt.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.cqcnt.config.GlobalVariable;
 import com.cqcnt.exception.AuthenticationException;
 import com.cqcnt.exception.GetTokenMethodError;
 import com.cqcnt.exception.LoginException;
@@ -30,14 +31,14 @@ public class LoginController {
     private LoginService loginService;
 
     @RequestMapping ("/login")
-    public Result login(HttpServletRequest request) throws IntrospectionException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, LoginException {
+    public Result login() throws IntrospectionException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, LoginException {
         try {
-            loginService.getToken(request);
+            loginService.getToken();
         } catch (Exception e) {
             throw new LoginException("获取登录token失败");
         }
-        HttpSession session = request.getSession();
-        System.out.println(session.getAttribute("token"));
+        GlobalVariable globalVariable = GlobalVariable.getInstance();
+        System.out.println(globalVariable.getToken());
         return Result.success(200,"1",null);
     }
 

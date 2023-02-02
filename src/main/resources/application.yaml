@@ -6,6 +6,11 @@ server:
     session:
       timeout: 5m
 
+zabbix:
+  address: http://117.59.224.111
+  username: Admin
+  password: Cqcnt@123.,
+  config: /src/main/resources/static/zabbixHostConfig.json
 
 
 
