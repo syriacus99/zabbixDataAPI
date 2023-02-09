@@ -26,13 +26,23 @@ public class ApplicationInitConfig implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("获取token");
         loginService.getToken();
-        System.out.println("获取token成功");
+        System.out.println("成功");
         System.out.println("获取zabbixsession");
         loginService.getZbxSession();
-        System.out.println("获取zabbixsession成功");
+        System.out.println("成功");
         System.out.println("读取zabbixHostConfig");
         projectInitService.loadZabbixHostConfig();
-        System.out.println("读取成功");
-        System.out.println(globalVariable.getHostListMap());
+        System.out.println("成功");
+        System.out.println(globalVariable.getHostListMapByHostId());
+        System.out.println(globalVariable.getHostListMapByCity());
+        projectInitService.getInterfacesToGeometry();
+        System.out.println(globalVariable.getInterfacesToGeometry());
+        System.out.println("读取interfaces信息");
+        projectInitService.getItemsInfo();
+        System.out.println("成功");
+        System.out.println(globalVariable.getHostListMapByHostId());
+        System.out.println("预缓存items图片");
+        //projectInitService.getAllItemGraph();
+        System.out.println("成功");
     }
 }

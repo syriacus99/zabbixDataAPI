@@ -1,6 +1,10 @@
 package com.cqcnt.service;
 
+import com.cqcnt.dao.HostInfoDao;
+import com.cqcnt.dao.dto.CityDataDto;
+import com.cqcnt.dao.form.GetItemsInfoByHostIdForm;
 import com.cqcnt.exception.AuthenticationException;
+import com.cqcnt.exception.CqcntException;
 import com.cqcnt.exception.GetResultException;
 import com.cqcnt.exception.ZabbixConfigException;
 import com.cqcnt.util.Result;
@@ -19,6 +23,14 @@ public interface APIDataService {
     public void getHostGraphInfo(HttpServletRequest request,Integer hostId);
     public byte[] getGraph(HttpServletRequest request,Integer graphId) throws AuthenticationException, ZabbixConfigException, IOException;
     public Result getItemsData(HttpServletRequest request, List<Integer> ItemId);
+    //根据hostid得到其所有配置文件里设置的监控项数据（itemid,name.prevvalue,lastvalue)
+    public List<GetItemsInfoByHostIdForm> getItemsInfoByHostId(Integer hostId);
+    //根据城市id获取host
+    public List<HostInfoDao> getHostByCity(String cityId) throws CqcntException;
+    //根据item获取graphId
+    public String getGraphIdByItemId(String itemId);
+    public Result getOneItemsData(Integer ItemId) throws GetResultException;
 
-    public Result getOneItemsData(HttpServletRequest request, Integer ItemId) throws GetResultException;
+    //根据cityId获取里面所有item数据
+    public CityDataDto getOneCityItemsData(String cityCode);
 }

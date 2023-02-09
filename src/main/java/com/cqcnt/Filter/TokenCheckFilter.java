@@ -14,14 +14,14 @@ import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-@Component
-public class TokenCheckFilter implements Filter {
-
-    @Resource
-    private LoginService loginService;
-
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+//@Component
+//public class TokenCheckFilter implements Filter {
+//
+//    @Resource
+//    private LoginService loginService;
+//
+//    @Override
+//    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 //        HttpSession session =  ((HttpServletRequest) servletRequest).getSession();
 //        Object token = session.getAttribute("token");
 //        if (token==null){
@@ -52,8 +52,8 @@ public class TokenCheckFilter implements Filter {
 //                throw new RuntimeException(e);
 //            }
 //        }
-        filterChain.doFilter(servletRequest,servletResponse);
-    }
-
-
-}
+//        filterChain.doFilter(servletRequest,servletResponse);
+//    }
+//
+//
+//}

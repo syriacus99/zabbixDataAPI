@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.support.hsf.HSFJSONUtils;
 import com.cqcnt.config.GlobalVariable;
 import com.cqcnt.dao.HostInfoDao;
+import com.cqcnt.dao.ItemInfoDao;
 import com.cqcnt.dao.dto.ItemGetDto;
 import com.cqcnt.dao.form.ItemGetForm;
 import com.cqcnt.service.APIDataService;
@@ -14,26 +15,32 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ProjectUtil {
 
-    public ItemGetDto itemSum(List<ItemGetForm> itemGetForms){
+    public Map<String, Long[]> itemSum(HostInfoDao hostInfoDao) {
         Long lastValueSum = 0L;
         Long preValueSum = 0L;
-        for(ItemGetForm eachItem : itemGetForms){
-            lastValueSum += eachItem.getLastvalue();
-            preValueSum += eachItem.getPrevvalue();
+        List<String> interfaces = hostInfoDao.getInterfaces();
+        Map<String, Long[]> interfacesData = new HashMap<>();
+        for (String eachInterface : interfaces) {
+            interfacesData.put(eachInterface, new Long[2]);
         }
-        ItemGetDto itemGetDto = new ItemGetDto();
-        itemGetDto = BeanCopyUtil.copyOne(itemGetForms.get(0),ItemGetDto.class);
-        itemGetDto.setPrevvalue(preValueSum);
-        itemGetDto.setLastvalue(lastValueSum);
-        return itemGetDto;
+        Set<String> keySet = interfacesData.keySet();
+        List<ItemInfoDao> itemInfoDao = hostInfoDao.getItemInfoDao();
+        for (ItemInfoDao eachItem : itemInfoDao) {
+            String name = eachItem.getName();
+            for (String eachKey : keySet) {
+                if (name.contains(eachKey)) {
+                    Long[] longs = interfacesData.get(eachKey);
+                    longs[0] += Long.parseLong(eachItem.getPrevvalue());
+                    longs[1] += Long.parseLong(eachItem.getLastvalue());
+                    interfacesData.put(eachKey, longs);
+                }
+            }
+        }
+        return interfacesData;
     }
-
 }

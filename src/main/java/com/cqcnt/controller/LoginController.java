@@ -42,15 +42,4 @@ public class LoginController {
         return Result.success(200,"1",null);
     }
 
-    @RequestMapping ("/test")
-    public Result test(HttpServletRequest request) throws IntrospectionException, ZabbixConfigException, NoSuchFieldException, InvocationTargetException, IllegalAccessException, GetTokenMethodError, AuthenticationException {
-//        MultiValueMap<String,String> map = new LinkedMultiValueMap<>();
-//        map.add("username","Admin");
-//        map.add("password","Cqcnt@123.,");
-//        map.add("enter","Sign in");
-//        MyHttpUtil.sendFormPostRequest("http://117.59.224.111/index.php",
-//                map);
-        loginService.getAllHost(request);
-        return Result.success(200,"1",null);
-    }
 }
