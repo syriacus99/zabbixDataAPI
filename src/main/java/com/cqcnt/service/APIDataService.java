@@ -13,6 +13,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Resource
 public interface APIDataService {
@@ -24,7 +25,7 @@ public interface APIDataService {
     public byte[] getGraph(HttpServletRequest request,Integer graphId) throws AuthenticationException, ZabbixConfigException, IOException;
     public Result getItemsData(HttpServletRequest request, List<Integer> ItemId);
     //根据hostid得到其所有配置文件里设置的监控项数据（itemid,name.prevvalue,lastvalue)
-    public List<GetItemsInfoByHostIdForm> getItemsInfoByHostId(Integer hostId);
+    public CompletableFuture<List<GetItemsInfoByHostIdForm>> getItemsInfoByHostId(Integer hostId);
     //根据城市id获取host
     public List<HostInfoDao> getHostByCity(String cityId) throws CqcntException;
     //根据item获取graphId
@@ -32,5 +33,5 @@ public interface APIDataService {
     public Result getOneItemsData(Integer ItemId) throws GetResultException;
 
     //根据cityId获取里面所有item数据
-    public CityDataDto getOneCityItemsData(String cityCode);
+    public CompletableFuture<CityDataDto> getCityItemsData();
 }

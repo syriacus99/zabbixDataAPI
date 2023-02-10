@@ -24,6 +24,8 @@ import javax.annotation.Resource;
 import javax.imageio.stream.FileImageOutputStream;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class ProjectInitServiceImpl implements ProjectInitService {
@@ -84,12 +86,13 @@ public class ProjectInitServiceImpl implements ProjectInitService {
     }
 
     @Override
-    public void getItemsInfo() {
+    public void getItemsInfo() throws ExecutionException, InterruptedException {
         Object token = globalVariable.getToken();
         Map<String, HostInfoDao> hostListMapByHostId = globalVariable.getHostListMapByHostId();
         for(String eachHost : hostListMapByHostId.keySet()){
-            List<GetItemsInfoByHostIdForm> itemsInfos = apiDataService.getItemsInfoByHostId(Integer.valueOf(eachHost));
-            List<ItemInfoDao> itemInfoDaos = BeanCopyUtil.copyList(itemsInfos, ItemInfoDao.class);
+            //List<GetItemsInfoByHostIdForm> itemsInfos = apiDataService.getItemsInfoByHostId(Integer.valueOf(eachHost));
+            CompletableFuture<List<GetItemsInfoByHostIdForm>> itemsInfoByHostId = apiDataService.getItemsInfoByHostId(Integer.valueOf(eachHost));
+            List<ItemInfoDao> itemInfoDaos = BeanCopyUtil.copyList(itemsInfoByHostId.get(), ItemInfoDao.class);
             for(ItemInfoDao eachItem : itemInfoDaos){
                 String itemid = eachItem.getItemid();
                 String graphId = apiDataService.getGraphIdByItemId(itemid);
@@ -100,6 +103,7 @@ public class ProjectInitServiceImpl implements ProjectInitService {
     }
 
     @Override
+    @Async
     public void getAllItemGraph() throws AuthenticationException, ZabbixConfigException, IOException, ZabbixSessionTimeoutException {
         //获得全局变量中的zabbixSession以及初始化后的hostListMapByHostId
         Object zabbixSession = globalVariable.getZabbixSession();
@@ -119,12 +123,14 @@ public class ProjectInitServiceImpl implements ProjectInitService {
     @Async
     public void downloadGraph(String itemId,String graphId) throws ZabbixSessionTimeoutException, AuthenticationException, ZabbixConfigException, IOException {
         List<String> zabbixSession = (List<String>)globalVariable.getZabbixSession();
-        byte[] picture = MyHttpUtil.getPicture(zabbixAddress + "/chart.php?graphid=" + graphId, zabbixSession);
+        byte[] picture = MyHttpUtil.getPicture(zabbixAddress + "/chart2.php?graphid=" + graphId, zabbixSession);
         if (picture.length<2048){
             loginService.getZbxSession();
             throw new ZabbixSessionTimeoutException("zabbix Session 过期,重新获取");
         }
-        String path = "/src/main/resources/static/image/" + itemId;
+        String path = "src/main/resources/static/image/" + itemId+".jpg";
+        File file = new File(path);
+        System.out.println(file.getAbsolutePath());
         FileImageOutputStream imageOutput = new FileImageOutputStream(new File(path));//打开输入流
         imageOutput.write(picture, 0, picture.length);//将byte写入硬盘
         imageOutput.close();

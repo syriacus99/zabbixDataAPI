@@ -6,13 +6,14 @@ import com.cqcnt.exception.ZabbixSessionTimeoutException;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 @Resource
 public interface ProjectInitService {
 
     public void loadZabbixHostConfig();
 
-    public void getItemsInfo();
+    public void getItemsInfo() throws ExecutionException, InterruptedException;
 
     public void getAllItemGraph() throws AuthenticationException, ZabbixConfigException, IOException, ZabbixSessionTimeoutException;
 

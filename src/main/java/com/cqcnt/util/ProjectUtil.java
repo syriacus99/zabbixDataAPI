@@ -21,12 +21,13 @@ import java.util.*;
 public class ProjectUtil {
 
     public Map<String, Long[]> itemSum(HostInfoDao hostInfoDao) {
-        Long lastValueSum = 0L;
-        Long preValueSum = 0L;
         List<String> interfaces = hostInfoDao.getInterfaces();
         Map<String, Long[]> interfacesData = new HashMap<>();
         for (String eachInterface : interfaces) {
-            interfacesData.put(eachInterface, new Long[2]);
+            Long[] l = new Long[2];
+            l[0] = 0L;
+            l[1] = 0L;
+            interfacesData.put(eachInterface, l);
         }
         Set<String> keySet = interfacesData.keySet();
         List<ItemInfoDao> itemInfoDao = hostInfoDao.getItemInfoDao();

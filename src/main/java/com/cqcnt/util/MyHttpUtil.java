@@ -67,8 +67,6 @@ public class MyHttpUtil {
         headers.add("Upgrade-Insecure-Requests","1");
         headers.add("Access-Control-Allow-Origin","*");
         HttpEntity requestEntity = new HttpEntity(headers);
-        System.out.println(cookie);
-        System.out.println(requestEntity);
         //ResponseEntity<byte[]> img = restTemplate.getForEntity(url,byte[].class,requestEntity);
         ResponseEntity<byte[]> res = restTemplate.exchange(url,HttpMethod.GET,requestEntity,byte[].class);
         //System.out.println(img);

@@ -11,6 +11,7 @@ import com.cqcnt.exception.GetResultException;
 import com.cqcnt.exception.ZabbixConfigException;
 import com.cqcnt.service.APIDataService;
 import com.cqcnt.util.Result;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,12 +21,16 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping
 public class DataAPIController {
     @Resource
     private APIDataService apiDataService;
+
+    @Value("${domain}")
+    private String domain;
 
     @RequestMapping("/getOneItemData")
     private Result getOneItemData(Integer itemData) throws GetResultException {
@@ -67,16 +72,17 @@ public class DataAPIController {
         return Result.success(200,"success",cascadeSelectorDtoList);
     }
 
-    public Result getOneCityItemsData(String cityCode){
-        CityDataDto oneCityItemsData = apiDataService.getOneCityItemsData(cityCode);
+    @RequestMapping("/getCityItemsData")
+    public Result getCityItemsData() throws ExecutionException, InterruptedException {
+        CityDataDto oneCityItemsData = apiDataService.getCityItemsData().get();
         return Result.success(200,"successful",oneCityItemsData);
     }
 
-    @RequestMapping(value="/test")
-    private Result test(String code) {
-        System.out.println("111111");
-        List<GetItemsInfoByHostIdForm> itemsInfoByHostId = apiDataService.getItemsInfoByHostId(10529);
-        System.out.println(itemsInfoByHostId);
-        return Result.success(200,"11111",itemsInfoByHostId);
+    @RequestMapping("/getGraphPath")
+    public Result getGraphPath(String item){
+        System.out.println(domain+"/static/image/" + item +".jpg");
+        return Result.success(200,"successful",domain+"/static/image/" + item +".jpg");
     }
+
+
 }

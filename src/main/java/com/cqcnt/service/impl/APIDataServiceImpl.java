@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class APIDataServiceImpl implements com.cqcnt.service.APIDataService {
@@ -124,9 +125,10 @@ public class APIDataServiceImpl implements com.cqcnt.service.APIDataService {
         return Result.success(200,"获取item成功",result);
     }
 
-    @Async
+
     @Override
-    public List<GetItemsInfoByHostIdForm> getItemsInfoByHostId(Integer hostId) {
+    @Async
+    public CompletableFuture<List<GetItemsInfoByHostIdForm>> getItemsInfoByHostId(Integer hostId) {
         Map<String, HostInfoDao> hostListMap = globalVariable.getHostListMapByHostId();
         HostInfoDao hostInfoDao = hostListMap.get(hostId.toString());
         List<String> interfaces = hostInfoDao.getInterfaces();
@@ -175,7 +177,7 @@ public class APIDataServiceImpl implements com.cqcnt.service.APIDataService {
         );
         JSONArray jsonArray =  (JSONArray)response.get("result");
         List<GetItemsInfoByHostIdForm> result = jsonArray.toJavaList(GetItemsInfoByHostIdForm.class);
-        return result;
+        return CompletableFuture.completedFuture(result);
     }
 
     @Override
@@ -246,14 +248,15 @@ public class APIDataServiceImpl implements com.cqcnt.service.APIDataService {
     }
 
     @Override
-    public CityDataDto getOneCityItemsData(String cityCode) {
+    @Async
+    public CompletableFuture<CityDataDto> getCityItemsData() {
         Map<String, Set<String>> hostListMapByCity = globalVariable.getHostListMapByCity();
         Map<String, HostInfoDao> hostListMapByHostId = globalVariable.getHostListMapByHostId();
         Map<String, List<Double>> interfacesToGeometry = globalVariable.getInterfacesToGeometry();
         CityDataDto cityDataDto = new CityDataDto();
         List<DataVCityData> dataVCityDataList = new ArrayList<>();
-        Set<String> hosts = hostListMapByCity.get(cityCode);
-        int i = 0;
+        Set<String> hosts = hostListMapByHostId.keySet();
+        int i = 1;
         for(String eachHost : hosts){
             HostInfoDao hostInfoDao = hostListMapByHostId.get(eachHost);
             Map<String, Long[]> stringMap = projectUtil.itemSum(hostInfoDao);
@@ -261,16 +264,17 @@ public class APIDataServiceImpl implements com.cqcnt.service.APIDataService {
             for(String eachInterface : stringMap.keySet()){
                 DataVCityData dataVCityData = new DataVCityData();
                 dataVCityData.setId(i);
-                dataVCityData.setValue(stringMap.get(eachInterface)[0]+stringMap.get(eachInterface)[1]);
+                dataVCityData.setValue(stringMap.get(eachInterface)[0]);
                 List<Double> from = hostInfoDao.getGeometry();
                 List<Double> to = interfacesToGeometry.get(eachInterface);
-                dataVCityData.setGeometry(new Geometry(from,to));
+                Geometry geometry = new Geometry(from, to);
+                dataVCityData.setGeometry(geometry);
                 dataVCityDataList.add(dataVCityData);
                 i++;
             }
         }
         cityDataDto.setDataVCityData(dataVCityDataList);
-        return cityDataDto;
+        return CompletableFuture.completedFuture(cityDataDto);
     }
 }
 

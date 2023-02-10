@@ -42,7 +42,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         System.out.println("成功");
         System.out.println(globalVariable.getHostListMapByHostId());
         System.out.println("预缓存items图片");
-        projectInitService.getAllItemGraph();
+        //projectInitService.getAllItemGraph();
         System.out.println("成功");
     }
 }
