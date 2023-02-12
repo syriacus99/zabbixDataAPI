@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -81,6 +82,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
+    @Scheduled(cron ="* * */2 * * ?")
     public void getZbxSession() throws ZabbixConfigException, AuthenticationException {
         // 用户名密码地址未设置
         if(zabbixUserName==null|zabbixPassword==null|zabbixAddress==null){
